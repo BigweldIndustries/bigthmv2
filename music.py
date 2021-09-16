@@ -292,7 +292,7 @@ class MusicPlayer(commands.Cog, name='Music'):
                             description=download.title, url=download.url)
         emb.set_thumbnail(url=download.thumbnail)
         emb.set_footer(
-            text=f'Requested by {msg.author.display_name}', icon_url=await msg.author.profile().avatar_url)
+            text=f'Requested by {msg.author.display_name}')
         loop = asyncio.get_event_loop()
 
         if data['queue']:
