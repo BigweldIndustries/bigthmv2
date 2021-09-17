@@ -221,6 +221,35 @@ class MusicPlayer(commands.Cog, name='Music'):
         emb.set_footer(text=f'Requested by {msg.author.display_name}')
         return await msg.send(embed=emb)
 
+    async def queuetop(self, msg, song):
+        """
+        Add the query/song to the top of the queue of the server
+        """
+        title1 = await Downloader.get_info(self, url=song)
+        title = title1[0]
+        data = title1[1]
+        # NOTE:needs fix here
+        if data['queue']:
+            await self.playlist(data, msg)
+            # NOTE: needs to be embeded to make it better output
+            return await msg.send(f"Added playlist {data['title']} to queue")
+        self.player[msg.guild.id]['queue'].insert(0, {'title': title, 'author': msg})
+
+        new_opts = ytdl_format_options.copy()
+        audio_name = await self.filename_generator()
+
+        self.player['audio_files'].append(audio_name)
+        new_opts['outtmpl'] = new_opts['outtmpl'].format(audio_name)
+
+        ytdl = youtube_dl.YoutubeDL(new_opts)
+        download1 = await Downloader.video_url(song, ytdl=ytdl, loop=self.bot.loop)
+        download = download1[0]
+
+        emb = discord.Embed(colour=discord.Color.from_rgb(255, 0, 0), title='Added to top of queue', description=title, url=download.url)
+        emb.set_thumbnail(url=download.thumbnail)
+        emb.set_footer(text=f'Requested by {msg.author.display_name}')
+        return await msg.send(embed=emb)
+
     async def voice_check(self, msg):
         """
         function used to make bot leave voice channel if music not being played for longer than 2 minutes
@@ -286,7 +315,8 @@ class MusicPlayer(commands.Cog, name='Music'):
         else:
             await self.voice_check(msg)
 
-    async def start_song(self, msg, song):
+    async def start_skip_song(self, msg, song):
+        await skip(msg)
         new_opts = ytdl_format_options.copy()
         audio_name = await self.filename_generator()
 
@@ -319,6 +349,71 @@ class MusicPlayer(commands.Cog, name='Music'):
         msg.voice_client.source.volume = self.player[msg.guild.id]['volume']
         return msg.voice_client
 
+   async def start_song(self, msg, song):
+        new_opts = ytdl_format_options.copy()
+        audio_name = await self.filename_generator()
+
+        self.player['audio_files'].append(audio_name)
+        new_opts['outtmpl'] = new_opts['outtmpl'].format(audio_name)
+
+        ytdl = youtube_dl.YoutubeDL(new_opts)
+        download1 = await Downloader.video_url(song, ytdl=ytdl, loop=self.bot.loop)
+        download = download1[0]
+        data = download1[1]
+        self.player[msg.guild.id]['name'] = audio_name
+        emb = discord.Embed(colour=discord.Color.from_rgb(255, 0, 0), title='Now Playing',
+                            description=download.title, url=download.url)
+        emb.set_thumbnail(url=download.thumbnail)
+        emb.set_footer(
+            text=f'Requested by {msg.author.display_name}')
+        loop = asyncio.get_event_loop()
+
+        if data['queue']:
+            await self.playlist(data, msg)
+
+        msgId = await msg.send(embed=emb)
+        self.player[msg.guild.id]['player'] = download
+        self.player[msg.guild.id]['author'] = msg
+        msg.voice_client.play(
+            download, after=lambda a: loop.create_task(self.done(msg, msgId.id)))
+
+        # if str(msg.guild.id) in self.music: #NOTE adds user's default volume if in database
+        #     msg.voice_client.source.volume=self.music[str(msg.guild.id)]['vol']/100
+        msg.voice_client.source.volume = self.player[msg.guild.id]['volume']
+        return msg.voice_client
+
+    @commands.has_role("DJ")
+    @command(aliases=['pt', 'ptop'])
+    async def playtop(self, msg, *, song):
+        """
+        Play a song with given url or title from Youtube
+        `Ex:` s.play Titanium David Guetta
+        `Command:` play(song_name)
+        """
+        if msg.guild.id in self.player:
+            if msg.voice_client.is_playing() is True:  # NOTE: SONG CURRENTLY PLAYING
+                return await self.queuetop(msg, song)
+
+            if self.player[msg.guild.id]['queue']:
+                return await self.queuetop(msg, song)
+
+            if msg.voice_client.is_playing() is False and not self.player[msg.guild.id]['queue']:
+                return await self.start_song(msg, song)
+
+        else:
+            # IMPORTANT: THE ONLY PLACE WHERE NEW `self.player[msg.guild.id]={}` IS CREATED
+            self.player[msg.guild.id] = {
+                'player': None,
+                'queue': [],
+                'author': msg,
+                'name': None,
+                "reset": False,
+                'repeat': False,
+                'volume': 0.5
+            }
+            return await self.start_song(msg, song)
+
+
     @command(aliases=['p'])
     async def play(self, msg, *, song):
         """
@@ -348,6 +443,31 @@ class MusicPlayer(commands.Cog, name='Music'):
                 'volume': 0.5
             }
             return await self.start_song(msg, song)
+
+    @commands.has_role("DJ")
+    @command(aliases=['ps', 'pskip'])
+    async def play(self, msg, *, song):
+        """
+        Play a song with given url or title from Youtube
+        `Ex:` s.play Titanium David Guetta
+        `Command:` play(song_name)
+        """
+        if msg.guild.id in self.player:
+            return await self.start_skip_song(msg, song)
+
+        else:
+            # IMPORTANT: THE ONLY PLACE WHERE NEW `self.player[msg.guild.id]={}` IS CREATED
+            self.player[msg.guild.id] = {
+                'player': None,
+                'queue': [],
+                'author': msg,
+                'name': None,
+                "reset": False,
+                'repeat': False,
+                'volume': 0.5
+            }
+            return await self.start_skip_song(msg, song)
+
 
     @play.before_invoke
     async def before_play(self, msg):
@@ -537,7 +657,7 @@ class MusicPlayer(commands.Cog, name='Music'):
 
         return await msg.send("No songs in queue")
 
-    @command(name='song-info', aliases=['song?', 'nowplaying', 'current-song'])
+    @command(name='song-info', aliases=['song?', 'nowplaying', 'current-song', 'np'])
     async def song_info(self, msg):
         """
         Show information about the current playing song
