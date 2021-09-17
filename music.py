@@ -211,7 +211,7 @@ class MusicPlayer(commands.Cog, name='Music'):
 
         self.player['audio_files'].append(audio_name)
         new_opts['outtmpl'] = new_opts['outtmpl'].format(audio_name)
-        
+
         ytdl = youtube_dl.YoutubeDL(new_opts)
         download1 = await Downloader.video_url(song, ytdl=ytdl, loop=self.bot.loop)
         download = download1[0]
@@ -529,7 +529,7 @@ class MusicPlayer(commands.Cog, name='Music'):
                     emb = discord.Embed(
                         colour=discord.Color.from_rgb(255, 0, 0), title='queue')
                     emb.set_footer(
-                        text=f'Command used by {msg.author.name}', icon_url=msg.author.avatar_url)
+                        text=f'Command used by {msg.author.name}')
                     for i in self.player[msg.guild.id]['queue']:
                         emb.add_field(
                             name=f"**{i['author'].author.name}**", value=i['title'], inline=False)
@@ -548,7 +548,7 @@ class MusicPlayer(commands.Cog, name='Music'):
             emb = discord.Embed(colour=discord.Color.from_rgb(255, 0, 0), title='Currently Playing',
                                 description=self.player[msg.guild.id]['player'].title)
             emb.set_footer(
-                text=f"{self.player[msg.guild.id]['author'].author.name}", icon_url=msg.author.avatar_url)
+                text=f"{self.player[msg.guild.id]['author'].author.name}")
             emb.set_thumbnail(
                 url=self.player[msg.guild.id]['player'].thumbnail)
             return await msg.send(embed=emb, delete_after=120)
