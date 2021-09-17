@@ -28,7 +28,7 @@ async def on_ready():
 
 @bot.command()
 async def help(ctx, args=None):
-    help_embed = discord.Embed(colour=discord.Color.from_rgb(255, 0, 0, title="Bigthm Help")
+    help_embed = discord.Embed(colour=discord.Color.from_rgb(255, 0, 0), title="Bigthm Help")
 
         help_embed.add_field(
             name="Play",
