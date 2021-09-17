@@ -145,10 +145,6 @@ class MusicPlayer(commands.Cog, name='Music'):
         if URL is None:
             return False
 
-    @property
-    def random_color(self):
-        return discord.Color.from_rgb(random.randint(1, 255), random.randint(1, 255), random.randint(1, 255))
-
     async def yt_info(self, song):
         """
         Get info from youtube
@@ -288,7 +284,7 @@ class MusicPlayer(commands.Cog, name='Music'):
         download = download1[0]
         data = download1[1]
         self.player[msg.guild.id]['name'] = audio_name
-        emb = discord.Embed(colour=self.random_color, title='Now Playing',
+        emb = discord.Embed(colour=discord.Color.from_rgb(255, 0, 0), title='Now Playing',
                             description=download.title, url=download.url)
         emb.set_thumbnail(url=download.thumbnail)
         emb.set_footer(
@@ -517,7 +513,7 @@ class MusicPlayer(commands.Cog, name='Music'):
             if msg.guild.id in self.player:
                 if self.player[msg.guild.id]['queue']:
                     emb = discord.Embed(
-                        colour=self.random_color, title='queue')
+                        colour=discord.Color.from_rgb(255, 0, 0), title='queue')
                     emb.set_footer(
                         text=f'Command used by {msg.author.name}', icon_url=msg.author.avatar_url)
                     for i in self.player[msg.guild.id]['queue']:
@@ -535,7 +531,7 @@ class MusicPlayer(commands.Cog, name='Music'):
         `Command:` song-into()
         """
         if msg.voice_client is not None and msg.voice_client.is_playing() is True:
-            emb = discord.Embed(colour=self.random_color, title='Currently Playing',
+            emb = discord.Embed(colour=discord.Color.from_rgb(255, 0, 0), title='Currently Playing',
                                 description=self.player[msg.guild.id]['player'].title)
             emb.set_footer(
                 text=f"{self.player[msg.guild.id]['author'].author.name}", icon_url=msg.author.avatar_url)
