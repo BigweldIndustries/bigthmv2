@@ -349,7 +349,7 @@ class MusicPlayer(commands.Cog, name='Music'):
         msg.voice_client.source.volume = self.player[msg.guild.id]['volume']
         return msg.voice_client
 
-   async def start_song(self, msg, song):
+    async def start_song(self, msg, song):
         new_opts = ytdl_format_options.copy()
         audio_name = await self.filename_generator()
 
