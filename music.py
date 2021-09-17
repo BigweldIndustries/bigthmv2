@@ -205,7 +205,11 @@ class MusicPlayer(commands.Cog, name='Music'):
             return await msg.send(f"Added playlist {data['title']} to queue")
         self.player[msg.guild.id]['queue'].append(
             {'title': title, 'author': msg})
-        return await msg.send(f"**{title} added to queue**".title())
+
+        emb = discord.Embed(colour=discord.Color.from_rgb(255, 0, 0), title='Now Playing', description=title, url=download.url)
+        emb.set_thumbnail(url=download.thumbnail)
+        emb.set_footer(text=f'Requested by {msg.author.display_name}')
+        return await msg.send(embed=emb)
 
     async def voice_check(self, msg):
         """
