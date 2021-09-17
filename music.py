@@ -446,7 +446,7 @@ class MusicPlayer(commands.Cog, name='Music'):
 
     @commands.has_role("DJ")
     @command(aliases=['ps', 'pskip'])
-    async def play(self, msg, *, song):
+    async def playskip(self, msg, *, song):
         """
         Play a song with given url or title from Youtube
         `Ex:` s.play Titanium David Guetta
