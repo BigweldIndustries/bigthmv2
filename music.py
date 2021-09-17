@@ -206,6 +206,7 @@ class MusicPlayer(commands.Cog, name='Music'):
         self.player[msg.guild.id]['queue'].append(
             {'title': title, 'author': msg})
 
+        ytdl = youtube_dl.YoutubeDL(new_opts)
         download1 = await Downloader.video_url(song, ytdl=ytdl, loop=self.bot.loop)
         download = download1[0]
 
