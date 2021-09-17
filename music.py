@@ -305,7 +305,7 @@ class MusicPlayer(commands.Cog, name='Music'):
         msg.voice_client.source.volume = self.player[msg.guild.id]['volume']
         return msg.voice_client
 
-    @command()
+    @command(aliases=['p'])
     async def play(self, msg, *, song):
         """
         Play a song with given url or title from Youtube
@@ -408,7 +408,7 @@ class MusicPlayer(commands.Cog, name='Music'):
         msg.voice_client.stop()
 
     @commands.has_permissions(manage_channels=True)
-    @command()
+    @command(aliases=['s'])
     async def skip(self, msg):
         """
         Skip the current playing song
