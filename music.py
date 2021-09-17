@@ -208,8 +208,8 @@ class MusicPlayer(commands.Cog, name='Music'):
 
         download1 = await Downloader.video_url(song, ytdl=ytdl, loop=self.bot.loop)
         download = download1[0]
-        
-        emb = discord.Embed(colour=discord.Color.from_rgb(255, 0, 0), title='Now Playing', description=title, url=download.url)
+
+        emb = discord.Embed(colour=discord.Color.from_rgb(255, 0, 0), title='Added to queue', description=title, url=download.url)
         emb.set_thumbnail(url=download.thumbnail)
         emb.set_footer(text=f'Requested by {msg.author.display_name}')
         return await msg.send(embed=emb)
