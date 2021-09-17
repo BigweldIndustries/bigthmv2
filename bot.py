@@ -11,7 +11,7 @@ def get_prefix(bot, msg):
 
     return commands.when_mentioned_or(*prefixes)(bot, msg)
 
-bot=commands.Bot(command_prefix=get_prefix,description='bigthm based!')
+bot=commands.Bot(command_prefix=get_prefix,description='bigthm based!', help_command=None)
 
 
 
