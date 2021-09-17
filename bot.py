@@ -37,7 +37,7 @@ async def help(ctx, args=None):
     )
     help_embed.add_field(
         name="Skip",
-        value="Skips a song",
+        value="Skips a song. Mean ):",
         inline=False
     )
     help_embed.add_field(
@@ -47,12 +47,12 @@ async def help(ctx, args=None):
     )
     help_embed.add_field(
         name="Join",
-        value="Joins a vc",
+        value="Joins a vc. Why",
         inline=False
     )
     help_embed.add_field(
         name="Leave",
-        value="Leaves vc",
+        value="Leaves vc. Mean",
         inline=False
     )
     help_embed.add_field(
@@ -72,7 +72,7 @@ async def help(ctx, args=None):
     )
     help_embed.add_field(
         name="Reset",
-        value="Resets the current song",
+        value="Resets the current song. Why?",
         inline=False
     )
     help_embed.add_field(
@@ -82,15 +82,24 @@ async def help(ctx, args=None):
     )
     help_embed.add_field(
         name="Stop",
-        value="hops off",
+        value="hops off ):",
         inline=False
     )
     help_embed.add_field(
         name="Volume",
-        value="Changes volume",
+        value="Changes volume. Just turn the bot up dumbass",
         inline=False
     )
-
+    help_embed.add_field(
+        name="Playskip",
+        value="Skips current song and plays. Use if musty",
+        inline=False
+    )
+    help_embed.add_field(
+        name="Playtop",
+        value="Adds song to top of queue. Playskip for nice people",
+        inline=False
+    )
     await ctx.send(embed=help_embed)
 
 
