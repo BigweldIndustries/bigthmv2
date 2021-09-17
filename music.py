@@ -316,7 +316,18 @@ class MusicPlayer(commands.Cog, name='Music'):
             await self.voice_check(msg)
 
     async def start_skip_song(self, msg, song):
-        await skip(msg)
+        if msg.voice_client is None:
+            return await msg.send("**No music currently playing**".title(), delete_after=60)
+
+        if msg.author.voice is None or msg.author.voice.channel != msg.voice_client.channel:
+            return await msg.send("Please join the same voice channel as the bot")
+
+        if not self.player[msg.guild.id]['queue'] and msg.voice_client.is_playing() is False:
+            return await msg.send("**No songs in queue to skip**".title(), delete_after=60)
+
+        self.player[msg.guild.id]['repeat'] = False
+        msg.voice_client.stop()
+        await msg.message.add_reaction(emoji='✅')
         new_opts = ytdl_format_options.copy()
         audio_name = await self.filename_generator()
 
